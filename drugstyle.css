@@ -1,0 +1,90 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: helvetica neue, sans-serif; 
+}
+#main-content {
+  margin: 20px;
+  width: 100%
+  min-height: 500px;
+}
+h1 {
+  font-size: 28px;
+}
+
+/* FOOTER STYLES */
+footer {
+  background: lightblue;
+  padding: 10px 0;
+  text-align: center;
+  height: 35px;
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
+}
+footer form {
+  
+}
+
+/* ALL SEARCH AREA STYLES */
+/* NEEDS RESPONSIVE STYLES */
+#search-area {
+  background: lightblue;
+  padding: 10px 0;
+}
+#search-area h2 {
+  text-align: center;
+  margin: 0 0 15px 0;
+  font-size: 20px;
+  font-family: helvetica neue, sans-serif; 
+}
+.search-module h3 {
+  text-align: center;
+  margin: 10px 0;
+}
+.search-module {
+  display: inline-block;
+  width: 200px;
+  padding: 0;
+  margin-bottom: 15px;
+  text-align: center;
+  border-right: black 1px solid;
+}
+.search-module:last-child {
+  border-right: none;
+  width: 300px;
+  text-align: left;
+  padding-left: 27px;
+}
+label {
+  font-family: helvetica neue, sans-serif; 
+  font-size: 12px;
+}
+select {
+  width: 100px;
+}
+input[type:text] {
+  width: 100px;
+}
+
+/* TABLE STYLES */
+table, tbody {
+  margin: 0 auto;
+	border-collapse: collapse;
+	width: 75%;
+	text-align: left;
+}
+th {
+	border-bottom: black 1px solid;
+	padding: 2px 10px;
+	vertical-align: bottom;
+}
+tbody tr:nth-child(even) {
+	background: white;
+	background: rgba(169,215,250,1);
+}
+td {
+	border: 0px;
+	padding: 2px 10px;
+	vertical-align: text-top;
+}

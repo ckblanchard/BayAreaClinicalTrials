@@ -1,3 +1,7 @@
+<!-- Set CSS for app -->
+	<link rel="stylesheet" href="drugstyle.css" />
+
+
 <?php
 
 // connection info
@@ -16,7 +20,7 @@ function connectToDb(){
   //connects to the database 
   global $serverName, $userName, $password, $dbName;
   $conn = mysql_connect($serverName, $userName, $password) or die('Unable to connect to MySQL. ' . mysql_error());
-  if (!$dbConn){
+  if (!$conn){
    print "<h3>problem connecting to database...</h3>";
   } // end if
    
@@ -28,5 +32,33 @@ function connectToDb(){
 } // end connectToDb 
 
 
-?>
+function toTable($sql){
+  global $conn;
+  $output = "";
+  $result = mysql_query($sql, $conn);
+  
+  // start table
+  $output .= "<table>";
+  
+  // get field names as column headings
+  $output .= "<tr>"; 
+  while ($field = mysql_fetch_field($result)) {
+    $output .= "  <th>$field->name</th>";
+  } // end while
+  $output .= "</tr>";
+  
+  // get row data as associative array
+  while ($row = mysql_fetch_assoc($result)){
+    $output .= "<tr>";
+    foreach ($row as $col=>$val){
+      $output .= "  <td>$val</td>";
+    } // end foreach
+    $output .= "</tr>";
+  } // end while
+  $output .= "</table>";
+  return $output;
+} // end toTable
 
+
+
+?>

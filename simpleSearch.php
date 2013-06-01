@@ -1,14 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Simple drug development search</title>
+	<?php include("drugLib.php"); ?>
+</head>
+<body>
 <?php
-
-  // connect to database, etc
-    // get username and password for MySQL server
-    include('db_connection_info.inc'); 
-  
-    // connect to the MySQL server as the user or terminate script 
-    $conn = mysql_connect("localhost", $drugUsername, $drugPassword) or die('Unable to connect to MySQL. ' . mysql_error());
-  
-    // select the database to use 
-    mysql_select_db("drug_dev", $conn) or die('Unable to select database. ' . mysql_error());
+  // make db connection
+  $conn = connectToDb();
   
   // gather search criteria
     $company = filter_input(INPUT_POST, "company");
@@ -43,3 +43,16 @@
 
 
 ?>
+
+<!-- 
+Could do search criteria this way...
+
+if filter has var...
+  output .= additional query info
+  
+do that for each potential query bit
+
+and then pass output as complete search
+
+
+ -->
