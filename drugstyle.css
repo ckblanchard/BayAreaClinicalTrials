@@ -5,8 +5,8 @@ body {
 }
 #main-content {
   margin: 20px;
-  width: 100%
-  min-height: 500px;
+  padding: 20px;
+  min-height: 600px;
 }
 h1 {
   font-size: 28px;
@@ -15,28 +15,28 @@ h1 {
 /* FOOTER STYLES */
 footer {
   background: lightblue;
-  padding: 10px 0;
+  padding: 20px 0;
   text-align: center;
-  height: 35px;
-  width: 100%;
-  position: absolute;
-  bottom: 0px;
 }
-footer form {
-  
-}
+
 
 /* ALL SEARCH AREA STYLES */
 /* NEEDS RESPONSIVE STYLES */
 #search-area {
   background: lightblue;
-  padding: 10px 0;
+  padding-bottom: 10px;
+  text-align: center;
 }
 #search-area h2 {
   text-align: center;
-  margin: 0 0 15px 0;
-  font-size: 20px;
+  margin: 0 auto 12px auto;
+  font-size: 18px;
   font-family: helvetica neue, sans-serif; 
+  background: #555;
+  color: white;
+  padding: 8px 0 8px;
+  border-radius: 0 0 10px 10px;
+  width: 180px;
 }
 .search-module h3 {
   text-align: center;

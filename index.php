@@ -11,7 +11,7 @@
 <div id="main-content">
   <h1>Search Bay Area drug development</h1>
   <p>This area will soon have a background image with a map of the Bay Area and some explainer text that says what the entire site/app is all about.</p>
-</div>
+</div> <!-- end main-content div -->
 
 <?php include("footer.php"); ?>
 </body>
