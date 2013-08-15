@@ -10,17 +10,16 @@
 
 <div id="main-content">
 
-  <h1>Delete Record</h1>
-  
+  <h1>Add Record</h1>
   <?php 
+  
   $conn = connectToDb();
   
-  //retrieve data
-  $keyVal = filter_input(INPUT_POST, "keyVal");
-  $keyVal = mysql_real_escape_string($keyVal);
+  $tableName = filter_input(INPUT_POST, "tableName");
+  $tableName = mysql_real_escape_string($tableName);
   
+  print toAdd($tableName);
   
-  print deleteDrug($keyVal);
   ?>
 
 </div> <!-- end main-content div -->
@@ -28,4 +27,3 @@
 <?php include("footer.php"); ?>
 </body>
 </html>
-

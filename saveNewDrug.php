@@ -1,14 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Simple drug development search</title>
+	<?php include("drugLib.php"); ?>
+</head>
+<body>
+	<?php include("searchArea.php"); ?>
+	
+<div id="main-content">
 <?php
-
-  // connect to database, etc
-    // get username and password for MySQL server
-    include('db_connection_info.inc'); 
-  
-    // connect to the MySQL server as the user or terminate script 
-    $conn = mysql_connect("localhost", $drugUsername, $drugPassword) or die('Unable to connect to MySQL. ' . mysql_error());
-  
-    // select the database to use 
-    mysql_select_db("drug_dev", $conn) or die('Unable to select database. ' . mysql_error());
+  // make db connection
+  $conn = connectToDb();
   
   // gather form submissions and clean input
     $name = filter_input(INPUT_POST, "name");
@@ -21,6 +24,9 @@
     $name = mysql_real_escape_string($name);
     $indication = mysql_real_escape_string($indication);
     $bodyPart = mysql_real_escape_string($bodyPart);
+    $stage = mysql_real_escape_string($stage);
+    $company = mysql_real_escape_string($company);
+    
 
   // add to database
     // sql query to insert info
@@ -30,10 +36,18 @@
     $result = mysql_query($sql) or die(mysql_error());
 
     if($result){
-      print "Drug saved successfully.";
+      print "<p>Drug saved successfully.</p>";
+      print addAnotherDrug();
     } else {
       print "There was a problem saving the drug.";
     }
 
 
 ?>
+
+
+</div> <!-- end main-content div -->
+
+<?php include("footer.php"); ?>
+</body>
+</html>

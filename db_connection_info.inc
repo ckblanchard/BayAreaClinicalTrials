@@ -1,5 +1,5 @@
 <?php
 // for connection to MySQL
-$drugUsername = 'root';
-$drugPassword = 'root';
+$drugUsername = 'ckbgraph_drugs';
+$drugPassword = 'Bizzytimes2013!';
 ?>

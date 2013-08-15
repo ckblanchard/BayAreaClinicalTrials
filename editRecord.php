@@ -16,19 +16,76 @@
   
   $conn = connectToDb();
   
-  // expects $tableName, $keyName, $keyVal
-  $tableName = filter_input(INPUT_POST, "tableName");
-  $keyName = filter_input(INPUT_POST, "keyName");
+  // expects $keyVal for specific record from drugs table to edit
   $keyVal = filter_input(INPUT_POST, "keyVal");
-  
-  $tableName = mysql_real_escape_string($tableName);
-  $keyName = mysql_real_escape_string($keyName);
   $keyVal = mysql_real_escape_string($keyVal);
   
-  $query = "SELECT * FROM $tableName WHERE $keyName = $keyVal";
+  //$query = "SELECT * FROM $tableName WHERE $keyName = $keyVal";
+  $sql = "SELECT * FROM drugs WHERE drugID = '$keyVal'";
   
-  //print rToEdit($query);
-  print editRecord($query);
+  
+  // build fields to edit this drug
+  $result = mysql_query($sql, $conn);
+  $row = mysql_fetch_assoc($result);
+
+  $output .= <<<HERE
+<form action = "updateRecord.php"
+      method = "post">
+  <input type = "hidden"
+         name = "tableName"
+         value = "drugs">
+HERE;
+
+  // cycle through fields to build update form fields
+  foreach ($row as $col=>$val){
+    if ($col == "drugID"){
+      //this is primary key, don't make textbox. Instead store value in hidden field
+      $output .= <<<HERE
+  
+    <label>$col: $val</label>
+    <input type = "hidden"
+           name = "$col"
+             value = "$val">
+HERE;
+
+    } else if ($col == "name") {
+      
+      $output .= <<<HERE
+      <br /><br />
+    <label>Name</label>
+    <input type="text" name="name" value="$val">
+  
+HERE;
+
+    } else if ($col == "indication") {
+      $output .= <<<HERE
+      <br /><br />
+    <label>Indication</label>
+    <input type="text" name="indication" value="$val">
+
+HERE;
+
+    } else if ($col == "stage") {
+      $output .= <<<HERE
+      <br /><br />
+    <label>Stage</label>
+    <input type="text" name="stage" value="$val">
+
+HERE;
+
+    } // end if
+
+  } // end foreach
+  $output .= <<<HERE
+      <br /><br />
+      <button type = "submit">
+         update this record
+      </button>
+</form>
+
+HERE;
+  print $output;
+  
   
   ?>
 

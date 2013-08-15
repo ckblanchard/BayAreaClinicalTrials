@@ -1,0 +1,25 @@
+<!-- Simple search by system ... castoff because of null values -->
+
+  <label for="system">System</label>
+  <select name="system" id="system">
+    <option value="">Don't search by system</option>
+
+    <?php
+      // get username and password for MySQL server
+      include('db_connection_info.inc'); 
+
+      // connect to the MySQL server as the user or terminate script 
+      $conn = mysql_connect("localhost", $drugUsername, $drugPassword) or die('Unable to connect to MySQL. ' . mysql_error());
+
+      // select the database to use 
+      mysql_select_db("drug_dev", $conn) or die('Unable to select database. ' . mysql_error());
+      
+      // query all companies in companies table
+      $sql = "SELECT body_partID, system FROM body_part";
+      $result = mysql_query($sql, $conn) or die(mysql_error());
+      
+      while ($row = mysql_fetch_assoc($result)){
+        print '<option value="'.$row["body_partID"].'">'.$row["system"].'</option>';
+      }
+    ?>  
+  </select>

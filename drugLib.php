@@ -12,9 +12,8 @@ include('admin_password.inc');      // admin password in external file
 $userName = $drugUsername;
 $password = $drugPassword;
 $serverName = "localhost"; 
-$dbName = "drug_dev"; 
+$dbName = "ckbgraph_drugdev"; 
 $conn = "";
-$mainProgram = "spyMaster.php";
 
 function connectToDb(){
   //connects to the database 
@@ -38,27 +37,272 @@ function toTable($sql){
   $output = "";
   $result = mysql_query($sql, $conn);
   
+  // See how many rows in result
+  $num_rows = mysql_num_rows($result);
+
+  // Only build table if more than 0 rows returned
+  if($num_rows > 0){  
+
+    // Print details of search result
+    //$resultString = if($num_rows == 1) ? "result" : "results";
+    if($num_rows == 1){
+      $resultString = "result";
+    } else {
+      $resultString = "results";
+    }
+    
+    $output .= "<p>Your search returned $num_rows $resultString.</p><br /><br />";
+
+    // start table
+    $output .= "<table>";
+    
+    // get field names as column headings
+    $output .= "<tr>"; 
+    while ($field = mysql_fetch_field($result)) {
+      $output .= "  <th>$field->name</th>";
+    } // end while
+    $output .= "</tr>";
+    
+    // get row data as associative array
+    while ($row = mysql_fetch_assoc($result)){
+      $output .= "<tr>";
+      foreach ($row as $col=>$val){
+        $output .= "  <td>$val</td>";
+      } // end foreach
+      $output .= "</tr>";
+    } // end while
+    $output .= "</table>";
+  } else {
+    $output .= "<h3>Your search returned no results</h3>";
+  } // end if
+  return $output;
+} // end toTable
+
+
+// function to create table that gives crud access to admin user
+function crudTable($sql){
+
+  // only working with drugs table here
+  $tableName = "drugs";
+
+  global $adminPassword;
+  global $conn;
+  $output = "";
+  
+  // taking sql statement from updateDrug.php as chosen by search criteria on editExistingDrug.php
+  //$query = "SELECT * FROM $tableName";
+
+  $result = mysql_query($sql, $conn);
+
   // start table
   $output .= "<table>";
   
-  // get field names as column headings
-  $output .= "<tr>"; 
-  while ($field = mysql_fetch_field($result)) {
+  //get field names as column headings
+  $output .= "<tr>";
+  while ($field = mysql_fetch_field($result)){
     $output .= "  <th>$field->name</th>";
   } // end while
+
+  //get name of index field (presuming it's first field)
+  $keyField = mysql_fetch_field($result, 0);
+  $keyName = $keyField->name; 
+    
+  //add empty columns for crud actions
+  $output .= "<th></th><th></th>";
   $output .= "</tr>";
-  
-  // get row data as associative array
+
+  //get row data as associative array
   while ($row = mysql_fetch_assoc($result)){
     $output .= "<tr>";
+    //look at each field
     foreach ($row as $col=>$val){
-      $output .= "  <td>$val</td>";
+      $output .= "  <td>$val</td>\n";
     } // end foreach
+    
+    //build forms for add, delete and edit
+
+    //delete = DELETE FROM <table> WHERE <key> = <keyval>
+    $keyVal = $row["$keyName"];
+    $output .= <<<HERE
+
+  <td>
+    <form action = "deleteRecord.php"
+          method = "post">
+    <input type = "hidden"
+           name = "tableName"
+           value = "drugs" />
+    <input type= "hidden"
+           name = "keyName"
+           value = "$keyName" />
+    <input type = "hidden"
+           name = "keyVal"
+           value = "$keyVal" />
+    <input type = "submit"
+           value = "delete" />
+    </form>
+  </td>
+
+HERE;
+    //update: won't update yet, but set up edit form
+    $output .= <<<HERE
+  <td>
+    <form action = "editRecord.php"
+          method = "post">
+    <input type = "hidden"
+           name = "tableName"
+           value = "drugs">
+    <input type= "hidden"
+           name = "keyName"
+           value = "$keyName">
+    <input type = "hidden"
+           name = "keyVal"
+           value = "$keyVal">
+    <input type = "submit"
+           value = "edit">
+  </form>
+  </td>
+
+HERE;
+
     $output .= "</tr>";
-  } // end while
-  $output .= "</table>";
+    
+  }// end while
+
+    //add = INSERT INTO <table> {values}
+    //set up insert form send table name
+    $keyVal = $row["$keyName"];
+    $output .= <<<HERE
+<tr>
+  <td colspan = "8">
+    <form action="addDrug.php" method="post">
+    <input type="hidden" name="admin" value="$adminPassword">
+    <input type="hidden" name="tableName" value="$tableName">
+    <input type="submit" value="Enter a new drug">
+    </form>
+  </td>
+</tr>
+</table>
+
+HERE;
+
+
   return $output;
-} // end toTable
+
+} // end crudTable
+
+
+
+// function to create table that gives edit access for drugs table
+function addDrug($tableName){
+
+  // get tableName from index page
+  $tableName = filter_input(INPUT_POST, "tableName");
+  $tableName = mysql_real_escape_string($tableName);
+  
+  global $conn;
+  $output = "";
+  $query = "SELECT * FROM $tableName";
+
+  $result = mysql_query($query, $conn);
+
+  $output .= "<table>";
+  
+  //get field names as column headings
+  $output .= "<tr>";
+  while ($field = mysql_fetch_field($result)){
+    $output .= "  <th>$field->name</th>";
+  } // end while
+
+  //get name of index field (presuming it's first field)
+  $keyField = mysql_fetch_field($result, 0);
+  $keyName = $keyField->name;
+  
+  //add empty columns for crud actions
+  $output .= "<th></th><th></th>";
+  $output .= "</tr>";
+
+  //get row data as associative array
+  while ($row = mysql_fetch_assoc($result)){
+    $output .= "<tr>";
+    //look at each field
+    foreach ($row as $col=>$val){
+      $output .= "  <td>$val</td>\n";
+    } // end foreach
+    
+    //build forms for add, delete and edit
+
+    //delete = DELETE FROM <table> WHERE <key> = <keyval>
+    $keyVal = $row["$keyName"];
+    $output .= <<<HERE
+
+  <td>
+    <form action = "deleteRecord.php"
+          method = "post">
+    <input type = "hidden"
+           name = "tableName"
+           value = "$tableName" />
+    <input type= "hidden"
+           name = "keyName"
+           value = "$keyName" />
+    <input type = "hidden"
+           name = "keyVal"
+           value = "$keyVal" />
+    <input type = "submit"
+           value = "delete" />
+    </form>
+  </td>
+
+HERE;
+    //update: won't update yet, but set up edit form
+    $output .= <<<HERE
+  <td>
+    <form action = "editRecord.php"
+          method = "post">
+    <input type = "hidden"
+           name = "tableName"
+           value = "$tableName">
+    <input type= "hidden"
+           name = "keyName"
+           value = "$keyName">
+    <input type = "hidden"
+           name = "keyVal"
+           value = "$keyVal">
+    <input type = "submit"
+           value = "edit">
+  </form>
+  </td>
+
+HERE;
+
+    $output .= "</tr>";
+    
+  }// end while
+
+    //add = INSERT INTO <table> {values}
+    //set up insert form send table name
+    $keyVal = $row["$keyName"];
+    $output .= <<<HERE
+<tr>
+  <td colspan = "6">
+    <form action = "addRecord.php"
+          method = "post">
+    <input type = "hidden"
+           name = "tableName"
+           value = "$tableName">
+    <button type = "submit">
+       add a record
+    </button>
+    </form>
+  </td>
+</tr>
+</table>
+
+HERE;
+
+
+  return $output;
+
+} // end tToEdit
 
 
 // function to create table that gives crud access to admin user
@@ -243,6 +487,76 @@ HERE;
 } // end editRecord
 
 
+// function form to edit a record
+function editDrugRecord ($query){
+  
+  global $conn;
+  $output = "";
+  $result = mysql_query($query, $conn);
+  $row = mysql_fetch_assoc($result);
+
+  //get table name from field object
+  $fieldObj = mysql_fetch_field($result, 0);
+  $tableName = $fieldObj->table;
+
+  $output .= <<<HERE
+<form action = "updateRecord.php"
+      method = "post">
+  <input type = "hidden"
+         name = "tableName"
+         value = "drugs">
+<dl>
+HERE;
+  $fieldNum = 0;
+  foreach ($row as $col=>$val){
+    if ($fieldNum == 0){
+      //this is primary key, don't make textbox. Instead store value in hidden field
+      $output .= <<<HERE
+  
+    <dt>$col</dt>
+    <dd>$val
+    <input type = "hidden"
+           name = "$col"
+             value = "$val"></dd>
+             
+HERE;
+    } else if (preg_match("/(.*)ID$/", $col, $match)) {
+      //it's a foreign key reference
+      // get table name (match[1])
+      //create a listbox based on table name and its name field
+      $valList = fieldToList($match[1],$col, $fieldNum, "name");
+      
+      $output .= <<<HERE
+    <dt>$col</dt>
+    <dd>$valList</dd>
+  
+HERE;
+
+    } else {
+      $output .= <<<HERE
+    <dt>$col</dt>
+    <dd>
+    <input type = "text"
+           name = "$col"
+           value = "$val"></dd>
+
+HERE;
+    } // end if
+    $fieldNum++;
+  } // end foreach
+  $output .= <<<HERE
+  </dl>
+      <button type = "submit">
+         update this record
+      </button>
+</form>
+
+HERE;
+  return $output;
+} // end editDrugRecord
+
+
+
 // function to update a record
 function updateRecord($tableName, $fields, $vals){
   //expects name of a record, fields array values array
@@ -296,6 +610,24 @@ function deleteRecord ($table, $keyName, $keyVal){
   } //end if
   return $output;
 } // end deleteRecord
+
+
+// function to delete a record
+function deleteDrug ($keyVal){
+  //deletes $keyVal record from $table
+  global $conn;
+  $output = "";
+  $query = "DELETE FROM drugs WHERE drugID = $keyVal";
+
+  $result = mysql_query($query, $conn);
+  if ($result){
+    $output = "<h3>Record sucessfully deleted</h3>\n";
+  } else {
+    $output = "<h3>Error deleting record</h3>\n";
+  } //end if
+  return $output;
+} // end deleteRecord
+
 
 
 // function to prepare a record to add
@@ -428,6 +760,20 @@ HERE;
   return $output;
 } // end fieldToList
 
+
+// function to add new drug to database button
+function addAnotherDrug(){
+  global $adminPassword;
+  $output = <<<HERE
+  
+    <form action="addDrug.php" method="post">
+    <input type="hidden" name="admin" value="$adminPassword">
+    <input type="submit" value="Add another drug">
+  </form>
+HERE;
+
+  return $output;
+}
 ?>
 
 
